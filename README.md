@@ -16,11 +16,17 @@ For reference, the crossover between optimized traditional multiplication method
 
 NumPy vector and matrix functions are based on BLAS, a highly optimized matrix library. The implementation and optimizations used are very interesting but not quite in the scope of this document. For smaller matrices NumPy's matmul function is far faster than our implementation of Strassen, but surprisingly for larger matrices our Strassen starts to dominate matmul. The actual trade-off starts to occur around 200 x 200 but it becomes more noticeable at higher dimensions. This speed increase is not free, our implementation of Strassen takes substantially more memory and is not as numerically stable as matmul. But it is still very interesting to see the difference in speeds.
 
+![image](https://github.com/Singh-Diljit/Fast-Matrix-Multiplication/blob/main/matmul%20vs%20strassen.png)
+
 ## Strassen with matmul
 
-Because Strassen is a divide and conquer algorithm, having a faster way to do small chunks of the problem can greatly increase total speed. The goal of this program was to combine Strassen and NumPy's matmul function so large matrices are broken up via Strassen and small chunks are multiplied with matmul. The first question to arise was what dimension to swap Strassen with matmul. By doing a grid-search of crossover dimensions and refining the search when it seemed to improve speeds, I arrived at 64 x 64 to be the point matmul would help the most. Included is a small comparison of 64 vs min_time(k=10 and k=105) (though many other values were tested and can be using the benchmark file!)
+Because Strassen is a divide and conquer algorithm, having a faster way to do small chunks of the problem can greatly increase total speed. The goal of this program was to combine Strassen and NumPy's matmul function so large matrices are broken up via Strassen and small chunks are multiplied with matmul. The first question to arise was what dimension to swap Strassen with matmul. By doing a grid-search of crossover dimensions and refining the search when it seemed to improve speeds, I arrived at 64 x 64 to be the point matmul would help the most. Included is a small comparison of 64 vs min_time(k=10 and k=105) (though many other values were tested and can be using the benchmark file).
+
+![image](https://github.com/Singh-Diljit/Fast-Matrix-Multiplication/blob/main/Comparing%20Cross%20Over%20Values.png)
 
 The methodology was to randomly generate two K x K matrices, time how long it took to multiply the matrices, repeat this for 100 trials, and save the average time. The dimension of matrices, K, ranged from 0 to 4096. To keep runtimes low the matrices were populated with integers between 0 and 100.
 
 It is interesting to see just how much faster this hybrid Strassen is compared to either Strassen or matmul, but as I mentioned before there are a few reasons one would expect this - namely with our implementation of this hybrid it is space, numerical stability (due to Strassen overall), and the general robustness of matmul vs this particular implementation of Strassen.
+
+![image](https://github.com/Singh-Diljit/Fast-Matrix-Multiplication/blob/main/Matmul%20vs%20Hybrid%20Runtimes.png)
 
